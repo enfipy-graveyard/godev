@@ -1,13 +1,17 @@
 # Build stage
 FROM golang:alpine AS builder
-WORKDIR /go/src/app
-COPY app .
+
 RUN apk add --no-cache git \
-    && go install -v ./...
+    && go get github.com/golang/dep/cmd/dep
+
+WORKDIR /go/src/app
+COPY Gopkg.toml Gopkg.lock ./
+RUN dep ensure --vendor-only
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix nocgo -o /app ./app
 
 # Final stage
-# golang:alpine
 FROM scratch
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder /go/bin/app /
-CMD ["/app"]
+COPY --from=builder /app .
+ENTRYPOINT ["/app"]
