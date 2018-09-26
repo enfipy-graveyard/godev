@@ -1,0 +1,22 @@
+settings:
+  legacy:
+    force: false
+    interval: 100ms
+server:
+  status: false
+  open: false
+  host: localhost
+  port: 5001
+schema:
+- name: app
+  path: ./app
+  commands:
+    run:
+      status: true
+  watcher:
+    paths:
+    - ./
+    extensions:
+    - go
+    - yaml
+    - json
