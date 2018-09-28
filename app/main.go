@@ -5,26 +5,31 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/mediocregopher/radix.v2/redis"
+	"github.com/julienschmidt/httprouter"
+	"golang.org/x/net/http2"
 )
 
-func handle(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "You have visited %s endpoint!", r.URL.Path)
+// Index endpoint
+func Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	fmt.Fprint(w, "Welcome to the base endpoint!\n")
+}
+
+// Hello endpoint
+func Hello(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	fmt.Fprintf(w, "hello, %s!\n", ps.ByName("name"))
 }
 
 func main() {
-	port := "8000"
-	http.HandleFunc("/", handle)
-	fmt.Println("Starting web server on port " + port)
+	router := httprouter.New()
+	router.GET("/", Index)
+	router.GET("/hello/:name", Hello)
 
-	conn, dialErr := redis.Dial("tcp", "redis:6379")
-	if dialErr != nil {
-		log.Fatal(dialErr)
-	}
-	defer conn.Close()
+	var srv http.Server
+	http2.VerboseLogs = true
+	srv.Addr = ":8000"
+	srv.Handler = router
 
-	err := http.ListenAndServe(":"+port, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
+	http2.ConfigureServer(&srv, nil)
+
+	log.Fatal(srv.ListenAndServeTLS("certs/dev.crt", "certs/dev.key"))
 }

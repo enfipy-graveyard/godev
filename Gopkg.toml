@@ -3,5 +3,5 @@
   unused-packages = true
 
 [[constraint]]
-  branch = "master"
-  name = "github.com/mediocregopher/radix.v2"
+  name = "github.com/julienschmidt/httprouter"
+  version = "1.1.0"
