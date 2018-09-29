@@ -4,9 +4,11 @@ networks:
 volumes:
   data:
 services:
-  app:
-    container_name: app
+  goodev:
+    container_name: goodev
     build:
+      args:
+        folder: "goodev"
       context: .
       dockerfile: ./docker/dev.Dockerfile
     volumes:
