@@ -1,7 +1,7 @@
 package main
 
 import (
-	"goodev/app/routes"
+	"godev/src/routes"
 	"log"
 	"net/http"
 
@@ -11,7 +11,7 @@ import (
 func main() {
 	router := httprouter.New()
 	router.GET("/", routes.Index)
-	router.GET("/hey/:name", routes.Hello)
+	router.GET("/:name", routes.Hello)
 
 	var srv http.Server
 	srv.Addr = ":8000"

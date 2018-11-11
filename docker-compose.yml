@@ -4,15 +4,15 @@ networks:
 volumes:
   data:
 services:
-  goodev:
-    container_name: goodev
+  godev:
+    container_name: godev
     build:
       args:
-        folder: "goodev"
+        folder: godev
       context: .
-      dockerfile: ./docker/dev.Dockerfile
+      dockerfile: ./docker/prod.Dockerfile
     volumes:
-      - ./app:/go/src/goodev/app
+      - ./src:/go/src/godev/src
     ports:
       - 8000:8000
     networks:

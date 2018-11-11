@@ -1,14 +1,17 @@
 # Build stage
 FROM golang:alpine AS builder
 
-RUN apk add --no-cache git \
-    && go get github.com/golang/dep/cmd/dep
+ENV GO111MODULE on
+ARG folder=godev
 
-WORKDIR /go/src/app
-COPY Gopkg.toml Gopkg.lock ./
-RUN dep ensure --vendor-only
+WORKDIR /go/src/${folder}/
+
+COPY go.mod go.sum ./
+RUN apk add --no-cache git gcc musl-dev && \
+    go mod download
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix nocgo -o /app ./app
+
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix nocgo -o /app ./src
 
 # Final stage
 FROM scratch
